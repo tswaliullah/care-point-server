@@ -37,7 +37,7 @@ model Doctor {
   email               String @unique
   profilePhoto        String?
   contactNumber       String?
-  address             String
+  address             String?
   registrationNumber  String
   experience          Int
   gender              Gender
@@ -59,7 +59,7 @@ model Patient {
   name         String
   email        String @unique
   profilePhoto String?
-  address      String
+  address      String?
   isDeleted    Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
