@@ -13,9 +13,7 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix)
   }
 })
-
 const upload = multer({ storage: storage })
-
 
 const uploadToCloudinary = async(file: Express.Multer.File) => {
     // Configuration
@@ -24,7 +22,6 @@ const uploadToCloudinary = async(file: Express.Multer.File) => {
         api_key: config.cloudinary.api_key, 
         api_secret: config.cloudinary.api_secret
     });
-
     // Upload an image
      const uploadResult = await cloudinary.uploader
        .upload(
@@ -34,40 +31,11 @@ const uploadToCloudinary = async(file: Express.Multer.File) => {
        )
        .catch((error) => {
            console.log(error);
-       });
-       
+       }); 
     return uploadResult
 }
-
 
 export const fileUploder = {
     upload,
     uploadToCloudinary
 }
-
-
-
-
-
-// (async function() {
-    
-//     console.log(uploadResult);
-
-//     // Optimize delivery by resizing and applying auto-format and auto-quality
-//     const optimizeUrl = cloudinary.url('shoes', {
-//         fetch_format: 'auto',
-//         quality: 'auto'
-//     });
-    
-//     console.log(optimizeUrl);
-    
-//     // Transform the image: auto-crop to square aspect_ratio
-//     const autoCropUrl = cloudinary.url('shoes', {
-//         crop: 'auto',
-//         gravity: 'auto',
-//         width: 500,
-//         height: 500,
-//     });
-    
-//     console.log(autoCropUrl);    
-// })();
