@@ -27,7 +27,7 @@ const login = async( payload: {email: string, password: string} ) => {
     const refreshToken = jwtHelperes.generateToken({email: user.email, role: user.role}, config.refresh_token_secret as string, "90d")
 
     return {
-        accessToken,
+        accessToken, 
         refreshToken,
         needPasswordChange: user.needPasswordChange
     }
