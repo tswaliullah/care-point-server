@@ -44,12 +44,11 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 
 const getAllFromDB = catchAsync(async(req: Request, res: Response) => {
     
-    console.log("options", req.query)
+    const filters = pick(req.query, ["status", "role", "email"])
     const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"])
 
 
-    const { page, limit, searchTerm, sortBy, sortOrder, role, status } = req.query;
-    const result = await UserService.getAllFromDB({page: Number(page), limit: Number(limit), searchTerm, sortBy, sortOrder, role, status});
+    const result = await UserService.getAllFromDB(filters, options);
 
     sendResponse(res, {
         statusCode: 200,
