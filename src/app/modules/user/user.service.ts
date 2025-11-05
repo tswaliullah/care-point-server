@@ -96,18 +96,30 @@ const createAdmin = async (req: Request): Promise<Admin> => {
 };
 
 
-const getAllFromDB = async ({page, limit} : {page: number, limit: number}) => {
-
-    const skip = (page - 1) * limit;
-
+const getAllFromDB = async ({page, limit, searchTerm, sortBy, sortOrder} : {page: number, limit: number, searchTerm?: any, sortBy?: any, sortOrder?: any}) => {
+    const pageNumber = page || 1;
+    const limitNumber = limit || 10;
+    const skip = (pageNumber - 1) * limitNumber;
     const result = await prisma.user.findMany({
         skip,
-        take: limit
+        take: limitNumber,
+
+        where: {
+            email: {
+                contains: searchTerm,
+                mode: "insensitive"
+            }
+        },
+
+        orderBy: sortBy && sortOrder ? {
+            [sortBy]: sortOrder
+        } : {
+            createdAt: "desc"
+        }
+
     })
     return result
 }
-
-
 
 export const UserService = {
     createPatient,
