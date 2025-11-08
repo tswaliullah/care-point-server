@@ -94,8 +94,7 @@ const scheduleForDoctor = async (filters: any, options: any) => {
         })
     }
 
-
-       const whereConditions: Prisma.ScheduleWhereInput = andConditions.length > 0 ? {
+    const whereConditions: Prisma.ScheduleWhereInput = andConditions.length > 0 ? {
         AND: andConditions
     } : {}
 
@@ -119,7 +118,7 @@ const scheduleForDoctor = async (filters: any, options: any) => {
             total,
         },
         data: result
-    }; 
+    };
 }
 
 export const ScheduleService = {
