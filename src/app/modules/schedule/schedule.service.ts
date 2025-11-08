@@ -2,6 +2,7 @@ import { addHours, addMinutes, format } from "date-fns";
 import { prisma } from "../../shared/prisma";
 import { paginationHelper } from "../../shared/pagination";
 import { Prisma } from "../../../generated/client";
+import { IJWTPayload } from "../../types/common";
 
 
 const insertIntoDB = async (payload: any) => {
@@ -70,7 +71,7 @@ const insertIntoDB = async (payload: any) => {
     return schedules
 }
 
-const scheduleForDoctor = async (filters: any, options: any) => {
+const scheduleForDoctor = async (user: IJWTPayload, filters: any, options: any) => {
 
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper.pagination(options);
     const { startDateTime: filterStartDateTime, endDateTime: filterEndDateTime } = filters;
@@ -98,8 +99,30 @@ const scheduleForDoctor = async (filters: any, options: any) => {
         AND: andConditions
     } : {}
 
+    // find booked slots and and return slot ids with a obj
+    const doctorSchedules = await prisma.doctorSchedules.findMany({
+        where: {
+            doctor: {
+                email: user.email
+            }
+        },
+        select: {
+            scheduleId: true
+        }
+    })
+
+    // convert obj into arr
+    const doctorScheduleIds = doctorSchedules.map(schedule => schedule.scheduleId);
+
+
     const result = await prisma.schedule.findMany({
-        where: whereConditions,
+        where: {
+            ...whereConditions,
+            // filter booked slot
+            id: {
+                notIn: doctorScheduleIds
+            }
+        },
         skip,
         take: limit,
         orderBy: {
@@ -108,7 +131,13 @@ const scheduleForDoctor = async (filters: any, options: any) => {
     });
 
     const total = await prisma.schedule.count({
-        where: whereConditions
+        where: {
+            ...whereConditions,
+            // filter booked slot
+            id: {
+                notIn: doctorScheduleIds
+            }
+        }
     });
 
     return {
@@ -128,7 +157,7 @@ const deleteScheduleFromDB = async (id: string) => {
             id
         }
     })
-} 
+}
 
 export const ScheduleService = {
     insertIntoDB,
