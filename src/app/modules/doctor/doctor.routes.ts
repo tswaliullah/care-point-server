@@ -11,5 +11,11 @@ router.get(
 )
 
 
+router.put(
+    "/:id",
+    DoctorController.updateDoctorProfile
+)
 
-export const scheduleRoutes = router;
+
+
+export const doctorRoutes = router;
