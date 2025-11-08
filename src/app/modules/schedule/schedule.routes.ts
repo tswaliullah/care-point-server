@@ -14,13 +14,15 @@ router.get(
 )
 
 router.post(
-    "/",   
+    "/",
+    auth(UserRole.ADMIN),
     ScheduleController.insertIntoDB
 )
 
 
 router.delete(
-    "/:id",   
+    "/:id",
+    auth(UserRole.ADMIN),
     ScheduleController.deleteScheduleFromDB
 )
 

@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express"
 
 const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
 
-    let statusCode: number = httpStatus.INTERNAL_SERVER_ERROR;
+    let statusCode: number = err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
     let success = false;
     let message = err.message || "Something went wrong!";
     let error = err;
