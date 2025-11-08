@@ -2,6 +2,7 @@ import { prisma } from "../../shared/prisma";
 import { Doctor, Prisma } from "../../../generated/client";
 import { paginationHelper } from "../../shared/pagination";
 import { doctorSearchableFields } from "./doctor.constant";
+import { IDoctorUpdateInput } from "./doctor.interface";
 
 const getAllDoctorFromDB = async (filters: any, options: any) => {
 
@@ -59,18 +60,35 @@ const getAllDoctorFromDB = async (filters: any, options: any) => {
 }
 
 
-const updateDoctorProfile = async (id: string, payload: Partial<Doctor>) => {
+const updateDoctorProfile = async (id: string, payload: Partial<IDoctorUpdateInput>) => {
     const doctorInfo = await prisma.doctor.findFirstOrThrow({
         where: {
             id
         }
     })
 
+    const { specialties, ...doctorData } = payload;
+
+    if(specialties && specialties.length > 0) {
+        const deleteSpecialtyIds = specialties.filter((specialty) => specialty.isDeleted);
+
+        for(const specialty of deleteSpecialtyIds) {
+            await prisma.doctorSpecialties.deleteMany({
+                where: {
+                    doctorId: id,
+                    specialitiesId: specialty.specialtyId
+                }
+            })
+        }
+        
+        const createSpecialtyIds = specialties.filter((specialty) => !specialty.isDeleted); 
+    }
+
     const updatedData = await prisma.doctor.update({
         where: {
             id: doctorInfo.id
         },
-        data: payload
+        data: doctorData
     })
 
     return updatedData
