@@ -1,0 +1,42 @@
+
+
+model Appoinment {
+  id             String            @id @default(uuid())
+  patientId      String
+  doctorId       String
+  scheduleId     String
+  videoCallingId String
+  status         AppoinmentStatus
+  paymentStatus  PaymentStatus
+  createAt       DateTime          @default(now())
+  updateAt       DateTime          @updatedAt
+
+  @@map("appoinments")
+}
+
+
+model Payment {
+  id                 String         @id @default(uuid())
+  appoinmentId       String
+  amount             Float
+  transactionId      String
+  status             PaymentStatus
+  paymentGateWayData Json?
+  createAt           DateTime       @default(now())
+  updateAt           DateTime       @updatedAt
+
+  @@map("payments")
+}
+
+model Prescription {
+  id           String    @id @default(uuid())
+  appoinmentId String
+  doctorId     String
+  instructions String
+  followUpDate DateTime
+  patientId    String
+  createAt     DateTime  @default(now())
+  updateAt     DateTime  @updatedAt
+
+  @@map("prescription")
+}
