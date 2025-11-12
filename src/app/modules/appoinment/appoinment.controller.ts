@@ -37,7 +37,25 @@ const getMyAppoinment = catchAsync(async(req: Request & {user?: IJWTPayload}, re
 })
 
 
+const updateAppointmentStatus = catchAsync(async(req: Request & {user?: IJWTPayload}, res: Response) => {
+
+    const {id} = req.params;
+    const {status} = req.body;
+    const user = req.user;
+    const result = await AppoinmentServices.updateAppointmentStatus(id, status, user as IJWTPayload);
+
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "Appoinmnet updated successfully....!",
+        data: result
+    })
+})
+
+
+
 export const AppoinmentControllers = {
     createAppoinment,
-    getMyAppoinment
+    getMyAppoinment,
+    updateAppointmentStatus
 }

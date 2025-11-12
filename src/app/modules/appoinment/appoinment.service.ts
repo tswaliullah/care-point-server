@@ -1,9 +1,11 @@
+import { AppoinmentStatus, Prisma, UserRole } from '../../../generated/client';
 import { paginationHelper } from '../../shared/pagination';
-import { Prisma, UserRole } from '../../../generated/client';
 import { v4 as uuidv4 } from 'uuid';
 import { IJWTPayload } from "../../types/common"
 import { prisma } from "../../shared/prisma"
 import { stripe } from '../../helper/stripe';
+import httpStatus from 'http-status';
+import ApiError from '../../errors/ApiError';
 
 const createAppoinment = async(user: IJWTPayload, payload: {doctorId: string, scheduleId: string}) => {
 
@@ -140,7 +142,8 @@ const getMyAppoinment = async(user: IJWTPayload, options: any, filters: any) => 
             where: whereConditions,
             skip,
             take: limit,
-            // orderBy: {
+            // TODO:
+            // orderBy: { 
             //     [sortBy]: sortOrder
             // },
             include: user.role === UserRole.DOCTOR ?
@@ -163,7 +166,37 @@ const getMyAppoinment = async(user: IJWTPayload, options: any, filters: any) => 
 }}
 
 
+const updateAppointmentStatus = async(appointmentId: string, status: AppoinmentStatus, user: IJWTPayload) => {
+    const appoinmentData = await prisma.appoinment.findUniqueOrThrow({
+        where: {
+            id: appointmentId
+        },
+        include: {
+            doctor: true
+        }
+    })
+
+    if(user.role === UserRole.DOCTOR) {
+        if (!(user.email === appoinmentData.doctor.email)) {
+            throw new ApiError(httpStatus.BAD_REQUEST, "This is not your appoinment");
+        }
+    }
+
+    return await prisma.appoinment.update({
+        where: {
+            id: appointmentId
+        },
+        data:{
+            status
+        }
+    })
+
+}
+
+
+
 export const AppoinmentServices = {
     createAppoinment,
-    getMyAppoinment
+    getMyAppoinment,
+    updateAppointmentStatus
 }
