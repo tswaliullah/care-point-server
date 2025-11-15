@@ -157,7 +157,7 @@ const getAllFromDB = async (params: any, options: any) => {
 
 const getMyProfile = async(user: IJWTPayload) => {
 
-    const userData = await prisma.user.findUniqueOrThrow({
+    const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
             email: user.email,
                 status: UserStatus.ACTIVE
@@ -171,7 +171,32 @@ const getMyProfile = async(user: IJWTPayload) => {
         }
     })
 
-    return userData
+    let profileData;
+
+    if(userInfo.role === UserRole.PATIENT){
+        profileData = await prisma.patient.findUnique({
+            where: {
+                email: userInfo.email
+            }
+        })
+    } else if(userInfo.role === UserRole.DOCTOR){
+        profileData = await prisma.doctor.findUnique({
+            where: {
+                email: userInfo.email
+            }
+        })
+    } else if (userInfo.role === UserRole.ADMIN) {
+        profileData = await prisma.admin.findUnique({
+            where: {
+                email: userInfo.email
+            }
+        })
+    }
+
+    return {
+        ...userInfo,
+        ...profileData
+    }
 }   
 
 export const UserService = {
