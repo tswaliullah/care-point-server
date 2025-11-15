@@ -10,7 +10,7 @@ const router = express.Router()
 
 router.get(
     "/me", 
-    auth(UserRole.ADMIN, UserRole.DOCTOR, UserRole.ADMIN),    
+    auth(UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN),    
     UserController.getMyProfile
 )
 
@@ -47,6 +47,13 @@ router.post(
         return UserController.createAdmin(req, res, next)
     }
 );
+
+
+router.patch(
+    "/:id/status", 
+    auth(UserRole.ADMIN),    
+    UserController.changeProfileStatus
+)
 
 
 export const userRoutes = router;
