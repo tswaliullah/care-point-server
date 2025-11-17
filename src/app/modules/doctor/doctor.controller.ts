@@ -6,6 +6,8 @@ import pick from "../../shared/pick";
 import { doctorConstableFields } from "./doctor.constant";
 
 
+
+
 const getAllDoctorFromDB = catchAsync(async(req: Request, res: Response) => {
     const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]); 
     const filters = pick(req.query, doctorConstableFields);
