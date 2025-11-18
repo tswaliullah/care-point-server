@@ -5,6 +5,7 @@ import sendResponse from "../../shared/sendResponse";
 import catchAsync from "../../shared/catchAsync";
 import httpStatus from 'http-status';
 import pick from "../../shared/pick";
+import { appointmentFilterableFields } from "./appointment.constant";
 
 const createAppoinment = catchAsync(async(req: Request & {user?: IJWTPayload}, res: Response) => {
 
@@ -52,10 +53,23 @@ const updateAppointmentStatus = catchAsync(async(req: Request & {user?: IJWTPayl
     })
 })
 
+const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
+    const filters = pick(req.query, appointmentFilterableFields)
+    const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+    const result = await AppoinmentServices.getAllFromDB(filters, options);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Appointment retrieval successfully',
+        meta: result.meta,
+        data: result.data,
+    });
+});
 
 
 export const AppoinmentControllers = {
     createAppoinment,
     getMyAppoinment,
+    getAllFromDB,
     updateAppointmentStatus
 }

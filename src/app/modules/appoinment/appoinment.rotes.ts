@@ -13,6 +13,11 @@ router.get(
     AppoinmentControllers.getMyAppoinment
 )
 
+router.get(
+    '/',
+    auth(UserRole.ADMIN),
+    AppoinmentControllers.getAllFromDB
+);
 
 router.post(
     "/",
